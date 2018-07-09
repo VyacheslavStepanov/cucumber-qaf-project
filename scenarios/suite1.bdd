@@ -1,0 +1,22 @@
+
+
+SCENARIO: Checking login to business-gazeta.ru
+META-DATA: {"description":"Sample Test Scenario","groups":["SMOKE"],"datafile": "resources/logindata.json"}
+	
+	Given get 'http://business-gazeta.ru'
+	When login with name '${username}' and password '${password}'
+	Then verify result is '${isvalid}'
+
+END
+
+SCENARIO: Registering account at business-gazeta.ru
+
+    Given I am on main Page
+    When I register account
+    Then I can login to system
+    And I can edit profile
+    And I can edit password
+    And I can logout
+
+END
+

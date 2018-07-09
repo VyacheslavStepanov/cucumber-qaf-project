@@ -1,0 +1,6 @@
+[
+  { "username" : "sweb1713@gmail.com" , "password":"654321" , "isvalid":true },
+  { "username" : "Sweb1713@Gmail.Com" , "password":"654321" , "isvalid":true },
+  { "username" : "Sweb1713" , "password":"654321" , "isvalid":false },
+  { "username" : "Sweb1713@Gmail.Com" , "password":"123456" , "isvalid":false }
+]
