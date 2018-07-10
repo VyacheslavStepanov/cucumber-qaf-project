@@ -1,8 +1,10 @@
 package com.sweb.steps;
 
 import com.qmetry.qaf.automation.step.QAFTestStep;
+import com.sweb.pages.TempMailPage;
+
 import static com.qmetry.qaf.automation.step.CommonStep.*;
-import static com.qmetry.qaf.automation.ui.webdriver.ElementFactory.$;
+import static java.lang.String.format;
 
 /**
  * @Author sweb
@@ -11,81 +13,50 @@ import static com.qmetry.qaf.automation.ui.webdriver.ElementFactory.$;
 public class TestStepImpl {
     static private String temp_mail;
 
-    @QAFTestStep(description = "I am on main Page")
-    public void openPage() throws Throwable {
-        get("http://business-gazeta.ru");
-        assertPresent("xpath=//strong[contains(.,'БИЗНЕС Online')]");
+    @QAFTestStep(description = "I click to {locator}")
+    public static void clickLink(String locator) {
+        click(locator);
     }
 
-    @QAFTestStep(description = "I register account")
-    public static void registerAccount() {
-        // получаем временную почту
-        get("https://temp-mail.org");
-        temp_mail = $("xpath=//input[@id='mail']").getAttribute("value");
-
-        get("http://business-gazeta.ru");
-        click("xpath=//a[@href='#/login']");
-
-        click("xpath=//a[@href='/registration']");
-        sendKeys("user_name", "xpath=//input[@name='name']");
-        sendKeys(temp_mail, "xpath=//input[@name='nickname']");
-        sendKeys(temp_mail, "xpath=//input[@name='email']");
-        sendKeys("1001.2000", "xpath=//input[@name='dob']");
-        sendKeys("123456", "xpath=//input[@id='password-passkey']");
-        sendKeys("123456", "xpath=//input[@id='password-passkey_repeat']");
-        click("xpath=//input[@id='radio-sex-1']");
-        click("xpath=//input[@name='pdn_agree']");
-        click("xpath=//input[@name='agree']");
-        click("xpath=//input[@type='submit']");
-        assertPresent("xpath=//article/div[contains(.,'Регистрация завершена.')]");
-
-        // подтверждаем регистрацию
-        get("https://temp-mail.org");
-        click("xpath=//a[contains(.,'Подтверждение регистрации')]");
-        click("xpath=//a[contains(.,'подтвердить')]");
+    @QAFTestStep(description = "I fill tempmail as {inputName}")
+    public static void fillTempMail(String inputName) {
+        temp_mail = TempMailPage.getTempMail();
+        String locator= format("xpath=//input[@name='%s' or @id='%s']", inputName, inputName);
+        sendKeys(temp_mail,locator);
     }
 
-    @QAFTestStep(description = "I can login to system")
-    public static void login() {
-        get("http://business-gazeta.ru");
-        click("xpath=//a[@href='#/login']");
-        sendKeys(temp_mail, "xpath=//input[@name='login']");
-        sendKeys("123456", "xpath=//input[@id='passkey-pwd']");
-        click("xpath=//button[contains(.,'Войти')]");
-        assertPresent("xpath=//a[contains(.,'Мой профиль ')]");
+    @QAFTestStep(description = "I confirm registration at temp mail")
+    public static void confirmRegistation() {
+        //TempMailPage.confirmRegistation();
     }
 
-    @QAFTestStep(description = "I can edit profile")
-    public static void editProfile() {
-        click("xpath=//a[contains(.,'Мой профиль ')]");
-        click("xpath=//a[contains(.,'Редактировать профиль')]");
-        assertPresent("xpath=//span[contains(.,'Пользователь:')]");
-        click("xpath=//li/a[contains(.,'Редактировать профиль')]");
+    @QAFTestStep(description = "I fill {value} as {inputName}")
+    public static void fillInput(String value, String inputName) {
 
-        sendKeys("MyCompany", "xpath=//input[@name='work']");
-        click("xpath=//input[@name='save']");
-        click("xpath=//a[contains(.,'Мой профиль ')]");
-        click("xpath=//a[contains(.,'Редактировать профиль')]");
-        assertPresent("xpath=//dd[contains(.,'MyCompany')]");
+        String locator= format("xpath=//input[@name='%s' or @id='%s']", inputName, inputName);
+        waitForPresent(locator, 1);
+        sendKeys(value, locator);
     }
 
-    @QAFTestStep(description = "I can edit password")
-    public static void editpassword() {
-        click("xpath=//a[contains(.,'Мой профиль ')]");
-        click("xpath=//a[contains(.,'Редактировать профиль')]");
-        assertPresent("xpath=//span[contains(.,'Пользователь:')]");
-        click("xpath=//a[contains(.,'Сменить пароль')]");
-        String password = "654321";
-        sendKeys("MyCompany", "xpath=//input[@name='passkey']");
-        sendKeys("MyCompany", "xpath=//input[@name='passkey_repeat']");
-        click("xpath=//input[@value='Изменить']");
-        assertPresent("xpath=//h1[contains(.,'Пароль успешно изменен')]");
+    @QAFTestStep(description = "I should see Регистрация завершена")
+    public static void verifyRegistrationTitle() {
+        String locator = "xpath=//article/div[contains(.,'Регистрация завершена.')]";
+        waitForPresent(locator, 3);
+        assertPresent(locator);
     }
-    @QAFTestStep(description = "I can logout")
-    public static void logout1() {
-        click("xpath=//a[contains(.,'Мой профиль ')]");
-        click("xpath=//a[contains(.,'Выйти')]");
-        assertNotPresent("xpath=//a[contains(.,'Мой профиль ')]");
+
+    @QAFTestStep(description = "I should see Логин или пароль неверный")
+    public static void verifyWrongLogin() {
+        String locator = "xpath=//div[@class='message' and contains(.,'Логин или пароль неверный. Восстановить пароль')]";
+        waitForPresent(locator, 3);
+        assertPresent(locator);
+    }
+
+    @QAFTestStep(description = "I should see Мой профиль")
+    public static void verifylogin() {
+        String locator = "xpath=//a[contains(.,'Мой профиль ')]";
+        waitForPresent(locator, 3);
+        assertPresent(locator);
     }
 
     @QAFTestStep(description = "login with name {username} and password {password}")

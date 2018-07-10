@@ -1,22 +1,43 @@
 
 
+FEATURE: User registration
+As a user I can register new account
+SCENARIO: Registering new account
+
+    Given get "http://business-gazeta.ru"
+    When I click to "link.login"
+    And I click to "link.registration"
+    Then I fill tempmail as "email"
+    And I fill tempmail as "nickname"
+    And I fill "TestUser" as "name"
+    And I fill "10.01.2000" as "dob"
+    And I fill "123456" as "password-passkey"
+    And I fill "123456" as "password-passkey_repeat"
+    And I click to "rBtn.sex.male"
+    And I click to "checkbox.personal_data"
+    And I click to "checkbox.user_agreement"
+    And I click to "btn.save"
+    And I should see Регистрация завершена
+    And I confirm registration at temp mail
+END
+
+FEATURE: User registration
+As a new user I can not login without confirmation via email
+SCENARIO: Login to unconfirmed account
+
+    Given get "http://business-gazeta.ru"
+    When I click to "link.login"
+    Then I fill tempmail as "login"
+    And I fill "123456" as "passkey"
+    And I click to "btn.login"
+    And I should see Логин или пароль неверный
+END
+
 SCENARIO: Checking login to business-gazeta.ru
 META-DATA: {"description":"Sample Test Scenario","groups":["SMOKE"],"datafile": "resources/logindata.json"}
-	
+
 	Given get 'http://business-gazeta.ru'
 	When login with name '${username}' and password '${password}'
 	Then verify result is '${isvalid}'
 
 END
-
-SCENARIO: Registering account at business-gazeta.ru
-
-    Given I am on main Page
-    When I register account
-    Then I can login to system
-    And I can edit profile
-    And I can edit password
-    And I can logout
-
-END
-
